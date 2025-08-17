@@ -5,7 +5,6 @@ use App\Http\Controllers\NewsController;
 use App\Http\Controllers\PpidController;
 use App\Http\Controllers\ServiceRequestController;
 use Illuminate\Support\Facades\Route;
-use Inertia\Inertia;
 
 Route::get('/health-check', function () {
     return response()->json([
@@ -35,7 +34,7 @@ Route::get('/ppid/permohonan/{ppidRequest}', [PpidController::class, 'show'])->n
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('dashboard', function () {
-        return Inertia::render('dashboard');
+        return view('dashboard');
     })->name('dashboard');
     
     // Admin routes for service requests

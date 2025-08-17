@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreServiceRequestRequest;
 use App\Models\ServiceRequest;
-use Inertia\Inertia;
 
 class ServiceRequestController extends Controller
 {
@@ -18,7 +17,7 @@ class ServiceRequestController extends Controller
             ->latest()
             ->paginate(10);
         
-        return Inertia::render('service-requests/index', [
+        return view('service-requests.index', [
             'serviceRequests' => $serviceRequests
         ]);
     }
@@ -28,7 +27,7 @@ class ServiceRequestController extends Controller
      */
     public function create()
     {
-        return Inertia::render('service-requests/create');
+        return view('service-requests.create');
     }
 
     /**
@@ -52,7 +51,7 @@ class ServiceRequestController extends Controller
     {
         $serviceRequest->load(['assignedTo']);
         
-        return Inertia::render('service-requests/show', [
+        return view('service-requests.show', [
             'serviceRequest' => $serviceRequest
         ]);
     }
@@ -62,7 +61,7 @@ class ServiceRequestController extends Controller
      */
     public function edit(ServiceRequest $serviceRequest)
     {
-        return Inertia::render('service-requests/edit', [
+        return view('service-requests.edit', [
             'serviceRequest' => $serviceRequest
         ]);
     }

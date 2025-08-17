@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Models\NewsArticle;
-use Inertia\Inertia;
 use Illuminate\Http\Request;
 
 class NewsController extends Controller
@@ -30,7 +29,7 @@ class NewsController extends Controller
 
         $articles = $query->latest('published_at')->paginate(12);
         
-        return Inertia::render('news/index', [
+        return view('news.index', [
             'articles' => $articles,
             'filters' => $request->only(['category', 'search']),
         ]);
@@ -51,7 +50,7 @@ class NewsController extends Controller
             ->take(3)
             ->get();
         
-        return Inertia::render('news/show', [
+        return view('news.show', [
             'article' => $article,
             'relatedArticles' => $relatedArticles,
         ]);
