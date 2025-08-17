@@ -1,4 +1,7 @@
+import { db } from '../db';
+import { usersTable } from '../db/schema';
 import { type CreateUserInput, type User } from '../schema';
+import { eq } from 'drizzle-orm';
 
 export async function createUser(input: CreateUserInput): Promise<User> {
     // This is a placeholder declaration! Real code should be implemented here.
@@ -17,10 +20,31 @@ export async function createUser(input: CreateUserInput): Promise<User> {
 }
 
 export async function getUserById(id: number): Promise<User | null> {
-    // This is a placeholder declaration! Real code should be implemented here.
-    // The goal of this handler is to fetch a user by their ID for authentication
-    // and authorization purposes.
-    return Promise.resolve(null);
+    try {
+        const result = await db.select()
+            .from(usersTable)
+            .where(eq(usersTable.id, id))
+            .execute();
+
+        if (result.length === 0) {
+            return null;
+        }
+
+        const user = result[0];
+        return {
+            id: user.id,
+            username: user.username,
+            email: user.email,
+            full_name: user.full_name,
+            role: user.role,
+            is_active: user.is_active,
+            created_at: user.created_at,
+            updated_at: user.updated_at
+        };
+    } catch (error) {
+        console.error('Get user by ID failed:', error);
+        throw error;
+    }
 }
 
 export async function authenticateUser(username: string, password: string): Promise<User | null> {

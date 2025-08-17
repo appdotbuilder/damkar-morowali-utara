@@ -1,4 +1,7 @@
+import { db } from '../db';
+import { datasetsTable, usersTable } from '../db/schema';
 import { type Dataset } from '../schema';
+import { eq } from 'drizzle-orm';
 
 export async function uploadDataset(
     title: string,
@@ -12,20 +15,46 @@ export async function uploadDataset(
     description?: string,
     isPublic: boolean = true
 ): Promise<Dataset> {
-    // This is a placeholder declaration! Real code should be implemented here.
-    // The goal of this handler is to upload CSV/Excel datasets with validation
-    // and metadata management for fire department statistics and transparency.
-    return Promise.resolve({
-        id: 1,
-        title: title,
-        description: description || null,
-        file_path: `/datasets/${file.filename}`,
-        file_type: determineFileType(file.mimeType),
-        period: period,
-        uploaded_by: uploadedBy,
-        is_public: isPublic,
-        created_at: new Date()
-    } as Dataset);
+    try {
+        // Verify that the uploader user exists
+        const user = await db.select()
+            .from(usersTable)
+            .where(eq(usersTable.id, uploadedBy))
+            .execute();
+
+        if (user.length === 0) {
+            throw new Error('Uploader user not found');
+        }
+
+        // Determine file type from MIME type
+        const fileType = determineFileType(file.mimeType);
+        
+        // Create file path (in real implementation, this would involve actual file storage)
+        const filePath = `/datasets/${Date.now()}_${file.filename}`;
+
+        // Insert dataset record into database
+        const result = await db.insert(datasetsTable)
+            .values({
+                title: title,
+                description: description || null,
+                file_path: filePath,
+                file_type: fileType,
+                period: period,
+                uploaded_by: uploadedBy,
+                is_public: isPublic
+            })
+            .returning()
+            .execute();
+
+        const dataset = result[0];
+        return {
+            ...dataset,
+            description: dataset.description
+        };
+    } catch (error) {
+        console.error('Dataset upload failed:', error);
+        throw error;
+    }
 }
 
 export async function getDatasets(isPublic?: boolean, limit: number = 50): Promise<Dataset[]> {
@@ -101,5 +130,7 @@ function determineFileType(mimeType: string): string {
     // This is a helper function to determine file type from MIME type
     if (mimeType.includes('csv')) return 'CSV';
     if (mimeType.includes('spreadsheet') || mimeType.includes('excel')) return 'Excel';
+    if (mimeType.includes('json')) return 'JSON';
+    if (mimeType.includes('pdf')) return 'PDF';
     return 'Unknown';
 }
