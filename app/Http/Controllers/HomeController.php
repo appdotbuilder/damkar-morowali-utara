@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\FireIncident;
 use App\Models\FireStation;
 use App\Models\NewsArticle;
+use Inertia\Inertia;
 
 class HomeController extends Controller
 {
@@ -38,7 +39,7 @@ class HomeController extends Controller
                 ->avg('response_time_minutes'),
         ];
 
-        return view('welcome', [
+        return Inertia::render('welcome', [
             'latestNews' => $latestNews,
             'recentIncidents' => $recentIncidents,
             'fireStations' => $fireStations,

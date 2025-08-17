@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StorePpidRequestRequest;
 use App\Models\PpidRequest;
+use Inertia\Inertia;
 
 class PpidController extends Controller
 {
@@ -13,7 +14,7 @@ class PpidController extends Controller
      */
     public function index()
     {
-        return view('ppid.index');
+        return Inertia::render('ppid/index');
     }
 
     /**
@@ -21,7 +22,7 @@ class PpidController extends Controller
      */
     public function create()
     {
-        return view('ppid.create');
+        return Inertia::render('ppid/create');
     }
 
     /**
@@ -45,7 +46,7 @@ class PpidController extends Controller
     {
         $ppidRequest->load(['processedBy']);
         
-        return view('ppid.show', [
+        return Inertia::render('ppid/show', [
             'ppidRequest' => $ppidRequest
         ]);
     }
